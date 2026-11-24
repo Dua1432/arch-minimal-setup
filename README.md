@@ -42,8 +42,9 @@ Only the essentials, nothing more:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Dua1432/arch-minimal-setup/refs/heads/main/arch-minimal-setup.sh -o setup.sh && sudo bash setup.sh
 
-Enter your sudo password when prompted. The script will take approximately 10-15 minutes to complete and will automatically reboot your system.
-Upon reboot, select "Plasma (Wayland)" from the SDDM login screen.
+
+5. Enter your sudo password when prompted. The script will take approximately 10-15 minutes to complete and will automatically reboot your system.
+6. Upon reboot, select "Plasma (Wayland)" from the SDDM login screen.
 
 ⚠️ Disclaimer
 This script is designed for a fresh, minimal Arch Linux installation. Running it on an existing, heavily customized system may cause conflicts. Always review the script's contents before executing it. Use at your own risk.
