@@ -101,8 +101,8 @@ sudo chown -R huzidua:huzidua /home/huzidua/.config/kitty
 # 8. Intel Hardware Acceleration (For Shotcut/Video Encoding)
 sudo pacman -S --needed --noconfirm intel-media-driver libva-utils
 
-# 9. Essential Media Codecs
-sudo pacman -S --needed --noconfirm ffmpeg gst-plugins-bad gst-plugins-ugly gst-libav mpv
+# 9. Essential Media Codecs + Latest Python for TTS
+sudo pacman -S --needed --noconfirm python python-pip ffmpeg gst-plugins-bad gst-plugins-ugly gst-libav mpv
 
 # 10. Wi-Fi Power Save Fix (FIXED NAMING)
 sudo mkdir -p /etc/NetworkManager/conf.d/
