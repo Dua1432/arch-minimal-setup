@@ -113,6 +113,13 @@ sudo systemctl restart NetworkManager
 sudo pacman -Sc --noconfirm
 sudo systemctl enable --now fstrim.timer
 
+# 12. Create 16GB Swap File (For LLMs & Heavy Multitasking)
+sudo fallocate -l 16G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
 echo "==========================================="
 echo "✅ Jani, ARCH TRUE MINIMAL & PERFECT setup complete!"
 echo "✅ Rebooting in 5 seconds..."
