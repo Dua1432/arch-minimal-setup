@@ -39,6 +39,11 @@ Only the essentials, nothing more:
 3. Ensure you have an active internet connection (use `nmtui` if Wi-Fi is not connected).
 4. Download and execute the setup script with this single command:
 
+---
+
+## ⚡ Quick Run Command
+Copy and paste this single line in your Arch TTY to download and execute the script:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Dua1432/arch-minimal-setup/refs/heads/main/arch-minimal-setup.sh -o setup.sh && sudo bash setup.sh
 
@@ -46,6 +51,8 @@ curl -fsSL https://raw.githubusercontent.com/Dua1432/arch-minimal-setup/refs/hea
 5. Enter your sudo password when prompted. The script will take approximately 10-15 minutes to complete and will automatically reboot your system.
 6. Upon reboot, select "Plasma (Wayland)" from the SDDM login screen.
 
+
 ⚠️ Disclaimer
+
 This script is designed for a fresh, minimal Arch Linux installation. Running it on an existing, heavily customized system may cause conflicts. Always review the script's contents before executing it. Use at your own risk.
 Crafted with ❤️ for the Arch Linux community.
