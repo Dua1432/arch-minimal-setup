@@ -15,8 +15,8 @@ sudo pacman -Syu --noconfirm
 # 2. Sudo Access Fix
 sudo usermod -aG wheel huzidua
 
-# 3. Plasma 6 Core + ONLY Kate, Dolphin, Kitty (for multitasking) + WAYLAND PORTALS
-sudo pacman -S --needed --noconfirm plasma-desktop plasma-workspace kwin sddm kate dolphin kitty partitionmanager xdg-desktop-portal xdg-desktop-portal-kde pipewire pipewire-pulse pipewire-alsa wireplumber networkmanager plasma-nm plasma-pa breeze alacritty blueman bluez bluez-utils git curl intel-ucode ufw base-devel
+# 3. Plasma 6 Core + Apps + WAYLAND PORTALS + fuse2 (For AppImages)
+sudo pacman -S --needed --noconfirm plasma-desktop plasma-workspace kwin sddm kate dolphin kitty partitionmanager xdg-desktop-portal xdg-desktop-portal-kde pipewire pipewire-pulse pipewire-alsa wireplumber networkmanager plasma-nm plasma-pa breeze alacritty blueman bluez bluez-utils git curl intel-ucode ufw base-devel fuse2
 
 # Enable Core Services
 sudo systemctl enable sddm
@@ -32,7 +32,7 @@ sudo ufw default allow outgoing
 sudo ufw --force enable
 sudo systemctl enable --now ufw
 
-# 5. Heating Fix (auto-cpufreq - The Proven Winner)
+# 5. AUR Helper (yay) + Heating Fix + Gear Lever (AppImage Manager)
 rm -rf yay-bin
 git clone https://aur.archlinux.org/yay-bin.git
 cd yay-bin
@@ -40,7 +40,11 @@ makepkg -si --noconfirm
 cd ..
 rm -rf yay-bin
 
+# Install auto-cpufreq
 yay -S --needed --noconfirm auto-cpufreq
+
+# Install Gear Lever (Requires fuse2, which was installed in Step 3)
+yay -S --needed --noconfirm gearlever
 
 sudo tee /etc/auto-cpufreq.conf << 'EOF'
 [battery]
