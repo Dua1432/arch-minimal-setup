@@ -60,7 +60,7 @@ sudo systemctl enable --now auto-cpufreq
 sudo sed -i 's/^#\?AutoEnable=.*/AutoEnable=true/' /etc/bluetooth/main.conf
 sudo systemctl restart bluetooth
 
-# 7. Alacritty Config (User's Favorite Terminal)
+# 7. Alacritty Config (User's Favorite Terminal for TTS/Opencode)
 mkdir -p /home/huzidua/.config/alacritty
 cat << 'EOF' > /home/huzidua/.config/alacritty/alacritty.toml
 [[keyboard.bindings]]
@@ -80,6 +80,19 @@ size = 12.0
 dimensions = { columns = 160, lines = 45 }
 EOF
 sudo chown -R huzidua:huzidua /home/huzidua/.config/alacritty
+
+# 7.5 Kitty Config (For Multitasking - SAME Size, Font & Shift+C/V Shortcuts)
+mkdir -p /home/huzidua/.config/kitty
+cat << 'EOF' > /home/huzidua/.config/kitty/kitty.conf
+font_size 12.0
+initial_window_width 160c
+initial_window_height 45c
+
+# Exact same shortcuts as Alacritty for muscle memory
+map shift+c copy_to_clipboard
+map shift+v paste_from_clipboard
+EOF
+sudo chown -R huzidua:huzidua /home/huzidua/.config/kitty
 
 # 8. Intel Hardware Acceleration (For Shotcut/Video Encoding)
 sudo pacman -S --needed --noconfirm intel-media-driver libva-utils
