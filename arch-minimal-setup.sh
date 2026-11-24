@@ -15,8 +15,8 @@ sudo pacman -Syu --noconfirm
 # 2. Sudo Access Fix
 sudo usermod -aG wheel huzidua
 
-# 3. Plasma 6 Core + ONLY Kate & Dolphin + WAYLAND PORTALS (FIXED!)
-sudo pacman -S --needed --noconfirm plasma-desktop plasma-workspace kwin sddm kate dolphin partitionmanager xdg-desktop-portal xdg-desktop-portal-kde pipewire pipewire-pulse pipewire-alsa wireplumber networkmanager plasma-nm plasma-pa breeze alacritty blueman bluez bluez-utils git curl intel-ucode ufw base-devel
+# 3. Plasma 6 Core + ONLY Kate, Dolphin, Kitty (for multitasking) + WAYLAND PORTALS
+sudo pacman -S --needed --noconfirm plasma-desktop plasma-workspace kwin sddm kate dolphin kitty partitionmanager xdg-desktop-portal xdg-desktop-portal-kde pipewire pipewire-pulse pipewire-alsa wireplumber networkmanager plasma-nm plasma-pa breeze alacritty blueman bluez bluez-utils git curl intel-ucode ufw base-devel
 
 # Enable Core Services
 sudo systemctl enable sddm
