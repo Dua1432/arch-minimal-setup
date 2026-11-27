@@ -19,8 +19,8 @@ sudo pacman -Syu --noconfirm
 # 2. Add user to the wheel group
 sudo usermod -aG wheel huzidua
 
-# 3. Plasma 6 core + apps + Wayland portals + fuse2 (for AppImages)
-sudo pacman -S --needed --noconfirm plasma-desktop plasma-workspace kwin sddm kate dolphin kitty partitionmanager xdg-desktop-portal xdg-desktop-portal-kde pipewire pipewire-pulse pipewire-alsa wireplumber networkmanager plasma-nm plasma-pa breeze alacritty blueman bluez bluez-utils git curl intel-ucode ufw base-devel fuse2
+# 3. Plasma 6 core + apps + Wayland portals + fuse2 + nano
+sudo pacman -S --needed --noconfirm plasma-desktop plasma-workspace kwin sddm kate dolphin kitty partitionmanager xdg-desktop-portal xdg-desktop-portal-kde pipewire pipewire-pulse pipewire-alsa wireplumber networkmanager plasma-nm plasma-pa breeze alacritty blueman bluez bluez-utils git curl intel-ucode ufw base-devel fuse2 nano
 
 # Enable core services
 sudo systemctl enable sddm
@@ -48,6 +48,12 @@ rm -rf yay-bin
 yay -S --needed --noconfirm auto-cpufreq
 # Google Chrome (official stable, from AUR)
 yay -S --needed --noconfirm google-chrome
+
+# 5.5 Auto-configure Chrome desktop entry (Gemini + minimize/maximize buttons)
+# Copy the system entry to the user dir, then inject flags into EVERY Exec line.
+mkdir -p /home/huzidua/.local/share/applications
+cp /usr/share/applications/google-chrome.desktop /home/huzidua/.local/share/applications/
+sed -i 's|^Exec=/usr/bin/google-chrome-stable |Exec=/usr/bin/google-chrome-stable --enable-features=Glic,GlicSidePanel,GeminiInChrome --ozone-platform-hint=auto |' /home/huzidua/.local/share/applications/google-chrome.desktop
 
 sudo tee /etc/auto-cpufreq.conf << 'EOF'
 [battery]
@@ -113,7 +119,11 @@ fi
 # 9. Media codecs + latest Python (for TTS) + Telegram
 sudo pacman -S --needed --noconfirm python python-pip ffmpeg gst-plugins-bad gst-plugins-ugly gst-libav mpv telegram-desktop
 
-# 9.5 Audio: auto 100% volume + Auto-Mute OFF + permanent save (no manual alsamixer)
+# 9.5 KDE utilities: screenshot, system monitor, archive, image viewer, video thumbnails, display settings
+# (--noconfirm auto-selects the default provider, so no manual prompt input is needed)
+sudo pacman -S --needed --noconfirm spectacle plasma-systemmonitor ark gwenview ffmpegthumbs kscreen
+
+# 9.6 Audio: auto 100% volume + Auto-Mute OFF + permanent save (no manual alsamixer)
 sudo pacman -S --needed --noconfirm alsa-utils sof-firmware alsa-firmware
 # Loop every sound card so the correct analog device is always configured
 for card in /proc/asound/card[0-9]*; do
