@@ -136,6 +136,29 @@ done
 sudo alsactl store
 sudo systemctl enable alsa-restore.service 2>/dev/null || true
 
+# 9.7 GTK window buttons + Breeze theme
+sudo pacman -S --needed --noconfirm kde-gtk-config breeze-gtk
+
+# 9.8 Chrome system titlebar
+pkill -TERM -f '^/opt/google/chrome/chrome --' 2>/dev/null || true
+sleep 2
+python3 - <<'PY'
+import json, os, glob, shutil, tempfile
+base = os.path.expanduser("~/.config/google-chrome")
+for p in [os.path.join(base,"Default","Preferences")] + sorted(glob.glob(os.path.join(base,"Profile *","Preferences"))):
+    if not os.path.exists(p): continue
+    try: d = json.load(open(p))
+    except Exception: continue
+    d.setdefault("browser",{})["custom_chrome_frame"] = False
+    if not os.path.exists(p+".bak"): shutil.copy2(p, p+".bak")
+    fd,t = tempfile.mkstemp(dir=os.path.dirname(p))
+    with os.fdopen(fd,"w") as f: json.dump(d,f,separators=(",",":"))
+    os.chmod(t,0o600); os.replace(t,p)
+PY
+
+# 9.9 OpenCode CLI
+curl -fsSL https://opencode.ai/v2/install | bash
+
 # 10. Wi-Fi power-save OFF + automatic DNS (Cloudflare + Google, IPv4 & IPv6)
 sudo mkdir -p /etc/NetworkManager/conf.d/
 echo -e "[connection]\nwifi.powersave = 2" | sudo tee /etc/NetworkManager/conf.d/disable-wifi-powersave.conf
