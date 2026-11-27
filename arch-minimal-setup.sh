@@ -1,38 +1,42 @@
 #!/bin/bash
-echo "🚀 Jani's Arch Linux Perfect Setup Starting..."
+echo "==========================================="
+echo " Jani's Arch Linux Minimal & Perfect Setup"
+echo "==========================================="
 
-# 0. Cache sudo password (PREVENTS script from hanging at AUR build!)
+# 0. Cache sudo password (prevents hanging during AUR builds)
 sudo -v
-# Keep sudo alive in background
+# Keep sudo alive in the background until the script exits
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-# 0.1 Ensure Sudo is enabled for wheel group (Safety First)
-sudo sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
+# 0.1 Ensure the wheel group has sudo rights (safe drop-in, syntax-validated)
+echo '%wheel ALL=(ALL:ALL) ALL' | sudo tee /etc/sudoers.d/10-wheel >/dev/null
+sudo chmod 440 /etc/sudoers.d/10-wheel
+sudo visudo -c
 
-# 1. Initial Update
+# 1. Full system update
 sudo pacman -Syu --noconfirm
 
-# 2. Sudo Access Fix
+# 2. Add user to the wheel group
 sudo usermod -aG wheel huzidua
 
-# 3. Plasma 6 Core + Apps + WAYLAND PORTALS + fuse2 (For AppImages)
+# 3. Plasma 6 core + apps + Wayland portals + fuse2 (for AppImages)
 sudo pacman -S --needed --noconfirm plasma-desktop plasma-workspace kwin sddm kate dolphin kitty partitionmanager xdg-desktop-portal xdg-desktop-portal-kde pipewire pipewire-pulse pipewire-alsa wireplumber networkmanager plasma-nm plasma-pa breeze alacritty blueman bluez bluez-utils git curl intel-ucode ufw base-devel fuse2
 
-# Enable Core Services
+# Enable core services
 sudo systemctl enable sddm
 sudo systemctl enable --now NetworkManager bluetooth
 
-# 3.5 Power-Profiles-Daemon KO BAND KARO - Auto-CPUFreq se pehle, warna larai hogi
-sudo systemctl stop power-profiles-daemon
-sudo systemctl mask power-profiles-daemon
+# 3.5 Disable power-profiles-daemon BEFORE auto-cpufreq (they conflict)
+sudo systemctl stop power-profiles-daemon 2>/dev/null || true
+sudo systemctl mask power-profiles-daemon 2>/dev/null || true
 
-# 4. Firewall Permanent ON
+# 4. Firewall: permanent ON
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw --force enable
 sudo systemctl enable --now ufw
 
-# 5. AUR Helper (yay) + Heating Fix + Gear Lever (AppImage Manager)
+# 5. AUR helper (yay) + auto-cpufreq + Google Chrome
 rm -rf yay-bin
 git clone https://aur.archlinux.org/yay-bin.git
 cd yay-bin
@@ -40,89 +44,119 @@ makepkg -si --noconfirm
 cd ..
 rm -rf yay-bin
 
-# Install auto-cpufreq
+# CPU temperature / power management
 yay -S --needed --noconfirm auto-cpufreq
-
-# Install Gear Lever (Requires fuse2, which was installed in Step 3)
-yay -S --needed --noconfirm gearlever
+# Google Chrome (official stable, from AUR)
+yay -S --needed --noconfirm google-chrome
 
 sudo tee /etc/auto-cpufreq.conf << 'EOF'
 [battery]
 governor = powersave
 energy_performance_preference = power
 turbo = never
-
 [charger]
 governor = powersave
 energy_performance_preference = balance_performance
 turbo = never
 EOF
-
 sudo systemctl enable --now auto-cpufreq
 
-# 6. Bluetooth Auto-Connect Fix
+# 6. Bluetooth auto-connect fix
 sudo sed -i 's/^#\?AutoEnable=.*/AutoEnable=true/' /etc/bluetooth/main.conf
 sudo systemctl restart bluetooth
 
-# 7. Alacritty Config (User's Favorite Terminal for TTS/Opencode)
+# 7. Alacritty config (preferred terminal for TTS / OpenCode)
 mkdir -p /home/huzidua/.config/alacritty
 cat << 'EOF' > /home/huzidua/.config/alacritty/alacritty.toml
 [[keyboard.bindings]]
 key = "C"
 mods = "Shift"
 action = "Copy"
-
 [[keyboard.bindings]]
 key = "V"
 mods = "Shift"
 action = "Paste"
-
 [font]
 size = 12.0
-
 [window]
 dimensions = { columns = 160, lines = 45 }
 EOF
 sudo chown -R huzidua:huzidua /home/huzidua/.config/alacritty
 
-# 7.5 Kitty Config (For Multitasking - SAME Size, Font & Shift+C/V Shortcuts)
+# 7.5 Kitty config (same size, font and Shift+C/V shortcuts as Alacritty)
 mkdir -p /home/huzidua/.config/kitty
 cat << 'EOF' > /home/huzidua/.config/kitty/kitty.conf
 font_size 12.0
 initial_window_width 160c
 initial_window_height 45c
-
-# Exact same shortcuts as Alacritty for muscle memory
 map shift+c copy_to_clipboard
 map shift+v paste_from_clipboard
 EOF
 sudo chown -R huzidua:huzidua /home/huzidua/.config/kitty
 
-# 8. Intel Hardware Acceleration (For Shotcut/Video Encoding)
-sudo pacman -S --needed --noconfirm intel-media-driver libva-utils
+# 8. Intel graphics drivers + hardware acceleration (archinstall-style)
+sudo pacman -S --needed --noconfirm mesa vulkan-intel intel-media-driver libva-intel-driver libva-utils
 
-# 9. Essential Media Codecs + Latest Python for TTS
-sudo pacman -S --needed --noconfirm python python-pip ffmpeg gst-plugins-bad gst-plugins-ugly gst-libav mpv
+# 8.5 MPV: enable hardware decoding (use GPU, not CPU)
+mkdir -p /home/huzidua/.config/mpv
+cat << 'EOF' > /home/huzidua/.config/mpv/mpv.conf
+hwdec=auto
+vo=gpu
+EOF
+sudo chown -R huzidua:huzidua /home/huzidua/.config/mpv
 
-# 10. Wi-Fi Power Save Fix (FIXED NAMING)
+# 8.6 Make sure CPU microcode actually loads (GRUB systems only)
+if [ -d /boot/grub ]; then
+    sudo grub-mkconfig -o /boot/grub/grub.cfg
+fi
+
+# 9. Media codecs + latest Python (for TTS) + Telegram
+sudo pacman -S --needed --noconfirm python python-pip ffmpeg gst-plugins-bad gst-plugins-ugly gst-libav mpv telegram-desktop
+
+# 9.5 Audio: auto 100% volume + Auto-Mute OFF + permanent save (no manual alsamixer)
+sudo pacman -S --needed --noconfirm alsa-utils sof-firmware alsa-firmware
+# Loop every sound card so the correct analog device is always configured
+for card in /proc/asound/card[0-9]*; do
+    idx=${card##*card}
+    for ctrl in Master Headphone Speaker PCM Front; do
+        amixer -c "$idx" sset "$ctrl" 100% unmute 2>/dev/null || true
+    done
+    amixer -c "$idx" sset 'Auto-Mute Mode' 'Disabled' 2>/dev/null || true
+done
+sudo alsactl store
+sudo systemctl enable alsa-restore.service 2>/dev/null || true
+
+# 10. Wi-Fi power-save OFF + automatic DNS (Cloudflare + Google, IPv4 & IPv6)
 sudo mkdir -p /etc/NetworkManager/conf.d/
 echo -e "[connection]\nwifi.powersave = 2" | sudo tee /etc/NetworkManager/conf.d/disable-wifi-powersave.conf
+# Apply DNS only to real Wi-Fi / Ethernet connections (handles names with spaces)
+nmcli -t -f NAME,TYPE connection show | grep -E ':(802-11-wireless|802-3-ethernet)$' | cut -d: -f1 | while IFS= read -r conn; do
+    sudo nmcli connection modify "$conn" \
+        ipv4.dns "1.1.1.1 8.8.8.8" ipv4.ignore-auto-dns yes \
+        ipv6.dns "2606:4700:4700::1111 2001:4860:4860::8888" ipv6.ignore-auto-dns yes
+done
 sudo systemctl restart NetworkManager
 
-# 11. Final Cleanup + Reboot
+# 11. Cleanup + SSD trim timer
 sudo pacman -Sc --noconfirm
 sudo systemctl enable --now fstrim.timer
 
-# 12. Create 16GB Swap File (For LLMs & Heavy Multitasking)
-sudo fallocate -l 16G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+# 12. Create 16GB swap file (idempotent + filesystem-aware: ext4 / btrfs)
+if [ ! -f /swapfile ]; then
+    ROOT_FS=$(findmnt -no FSTYPE /)
+    if [ "$ROOT_FS" = "btrfs" ]; then
+        sudo btrfs filesystem mkswapfile --size 16g /swapfile
+    else
+        sudo fallocate -l 16G /swapfile
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+    fi
+fi
+sudo swapon /swapfile 2>/dev/null || true
+grep -q '^/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 echo "==========================================="
-echo "✅ Jani, ARCH TRUE MINIMAL & PERFECT setup complete!"
-echo "✅ Rebooting in 5 seconds..."
+echo " Setup complete. Rebooting in 5 seconds..."
 echo "==========================================="
 sleep 5
 sudo reboot
