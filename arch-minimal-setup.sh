@@ -122,7 +122,7 @@ sudo pacman -S --needed --noconfirm python python-pip ffmpeg gst-plugins-bad gst
 
 # 9.5 KDE utilities: screenshot, system monitor, archive, image viewer, video thumbnails, display settings
 # (--noconfirm auto-selects the default provider, so no manual prompt input is needed)
-sudo pacman -S --needed --noconfirm spectacle plasma-systemmonitor ark gwenview ffmpegthumbs kscreen
+sudo pacman -S --needed --noconfirm spectacle plasma-systemmonitor ark gthumb ffmpegthumbs kscreen
 
 # 9.6 Audio: auto 100% volume + Auto-Mute OFF + permanent save (no manual alsamixer)
 sudo pacman -S --needed --noconfirm alsa-utils sof-firmware alsa-firmware
