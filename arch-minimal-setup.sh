@@ -35,6 +35,7 @@ sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw --force enable
 sudo systemctl enable --now ufw
+sudo pacman -S --needed --noconfirm gufw
 
 # 5. AUR helper (yay) + auto-cpufreq + Google Chrome
 rm -rf yay-bin
