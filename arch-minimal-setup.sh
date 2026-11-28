@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "==========================================="
-echo " Jani's Arch Linux Minimal & Perfect Setup"
+echo " Arch Linux Minimal & Perfect Setup"
 echo "==========================================="
 
 # 0. Cache sudo password (prevents hanging during AUR builds)
@@ -104,7 +104,8 @@ sudo chown -R huzidua:huzidua /home/huzidua/.config/kitty
 # 8. Intel graphics drivers + hardware acceleration (archinstall-style)
 sudo pacman -S --needed --noconfirm mesa vulkan-intel intel-media-driver libva-intel-driver libva-utils
 
-# 8.5 MPV: enable hardware decoding (use GPU, not CPU)
+# 8.5 MPV: install + enable hardware decoding (use GPU, not CPU)
+sudo pacman -S --needed --noconfirm mpv
 mkdir -p /home/huzidua/.config/mpv
 cat << 'EOF' > /home/huzidua/.config/mpv/mpv.conf
 hwdec=auto
@@ -118,7 +119,10 @@ if [ -d /boot/grub ]; then
 fi
 
 # 9. Media codecs + latest Python (for TTS) + Telegram
-sudo pacman -S --needed --noconfirm python python-pip ffmpeg gst-plugins-bad gst-plugins-ugly gst-libav mpv telegram-desktop
+sudo pacman -S --needed --noconfirm python python-pip ffmpeg gst-plugins-bad gst-plugins-ugly gst-libav telegram-desktop
+
+# 9.4 Shotcut: install (VA-API drivers Step 8 mein already hain)
+sudo pacman -S --needed --noconfirm shotcut
 
 # 9.5 KDE utilities: screenshot, system monitor, archive, image viewer, video thumbnails, display settings
 # (--noconfirm auto-selects the default provider, so no manual prompt input is needed)
